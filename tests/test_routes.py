@@ -101,6 +101,7 @@ class TestYourResourceService(TestCase):
             test_wishlist.updated_time.replace(microsecond=0),
         )
         self.assertEqual(new_wishlist["note"], test_wishlist.note)
+
         # Todo: Uncomment this code when get_wishlists is implemented
         # Check that the location header was correct
         # response = self.client.get(location)

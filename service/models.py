@@ -150,7 +150,7 @@ class Wishlist(db.Model):
 
 class Item(db.Model):
     """
-    Class that represents a Item (Item) in a Wishlist
+    Class that represents a Item in a Wishlist
     """
 
     id = db.Column(db.Integer, primary_key=True)  # id of each item

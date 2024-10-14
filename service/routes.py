@@ -100,7 +100,26 @@ def create_wishlists():
 # CREATE an item in wishlist
 ######################################################################
 
+"""@app.route("/wishlists/<int:wishlist_id>/items", methods=["POST"])
+def create_items(wishlist_id):
+    
+    Create new items in the Wishlists
+    
+    app.logger.info(f"Request to create new items in the wishlist...")
 
+    check_content_type("application/json")
+
+    wishlist = Wishlist.find(wishlist_id)
+    if not wishlist:
+        return (
+            jsonify({"Error": "The Wishlist does not exist"}),
+            status.HTTP_404_NOT_FOUND,
+        )
+
+    data = request.get_json()
+    app.logger.info("Processing Item: %s", data)
+    wishlist.deserialize(data)
+    item = Item()"""
 # Read wishlist
 # @app.route("/wishlists/<int:wishlist_id>", methods=["GET"])
 # def get_wishlists(wishlist_id):
