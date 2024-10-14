@@ -113,3 +113,33 @@ class TestYourResourceService(TestCase):
         # self.assertEqual(new_wishlist["quantity"], test_wishlist.quantity)
         # self.assertEqual(new_wishlist["updated_time"], test_wishlist.updated_time)
         # self.assertEqual(new_wishlist["note"], test_wishlist.note)
+
+    ############################################################
+    # Utility function to bulk WL
+    ############################################################
+    def _create_WL(self, count: int = 1) -> list:
+        """Factory method to create pets in bulk"""
+        wls = []
+        for _ in range(count):
+            test_wl = WishlistFactory()
+            response = self.client.post(BASE_URL, json=test_wl.serialize())
+            self.assertEqual(
+                response.status_code,
+                status.HTTP_201_CREATED,
+                "Could not create test pet",
+            )
+            new_pet = response.get_json()
+            test_wl.id = new_pet["id"]
+            wls.append(test_wl)
+        return wls
+
+    # ----------------------------------------------------------
+    # TEST LIST
+    # ----------------------------------------------------------
+    def test_get_wishlists(self):
+        """It should Get a list of wishlist"""
+        self._create_WL(5)
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 5)

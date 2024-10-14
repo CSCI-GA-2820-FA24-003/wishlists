@@ -131,7 +131,8 @@ class Wishlist(db.Model):
     def find(cls, by_id):
         """Finds a Wishlist by it's ID"""
         logger.info("Processing lookup for id %s ...", by_id)
-        return cls.query.session.get(cls, by_id)
+        return cls.query.filter(cls.id == by_id)
+        # return cls.query.session.get(cls, by_id)
 
     @classmethod
     def find_by_name(cls, name):

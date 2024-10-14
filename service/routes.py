@@ -97,8 +97,19 @@ def create_wishlists():
 
 
 # Read wishlist
-# @app.route("/wishlists/<int:wishlist_id>", methods=["GET"])
-# def get_wishlists(wishlist_id):
+@app.route("/wishlists", methods=["GET"])
+def get_wishlists():
+    """Returns all of the Pets"""
+    app.logger.info("Request for pet list")
+
+    wls = []
+
+    # Parse any arguments from the query string
+    wls = Wishlist.all()
+    results = [wl.serialize() for wl in wls]
+    app.logger.info("Returning %d wl", len(results))
+    return jsonify(results), status.HTTP_200_OK
+
 
 # Update wishlist
 # @app.route("/wishlists/<int:wishlist_id>", methods=["PUT"])
@@ -110,8 +121,44 @@ def create_wishlists():
 
 
 # List an item in wishlist
-# @app.route("/wishlists/<int:wishlist_id>/items", methods=["GET"])
-# def list_items(wishlist_id):
+@app.route("/wishlists/<int:wishlist_id>/items", methods=["GET"])
+def list_items(wishlist_id):
+    """Returns wishlist based on ID"""
+    app.logger.info("Request for wishlist based on ID")
+
+    wls = []
+
+    # Parse any arguments from the query string
+    """
+    category = request.args.get("category")
+    name = request.args.get("name")
+    available = request.args.get("available")
+    gender = request.args.get("gender")
+
+    if category:
+        app.logger.info("Find by category: %s", category)
+        wls = Wishlist.find_by_category(category)
+    elif name:
+        app.logger.info("Find by name: %s", name)
+        wls = Wishlist.find_by_name(name)
+    elif available:
+        app.logger.info("Find by available: %s", available)
+        # create bool from string
+        available_value = available.lower() in ["true", "yes", "1"]
+        wls = Wishlist.find_by_availability(available_value)
+    elif gender:
+        app.logger.info("Find by gender: %s", gender)
+        # create enum from string
+        wls = Wishlist.find_by_gender(Gender[gender.upper()])
+    else:
+    """
+    app.logger.info("Find all")
+    wls = Wishlist.find(wishlist_id)
+
+    results = [wl.serialize() for wl in wls]
+    app.logger.info("Returning %d wls", len(results))
+    return jsonify(results), status.HTTP_200_OK
+
 
 # Create an item in wishlist
 # @app.route("/wishlists/<int:wishlist_id>/items", methods=["POST"])
