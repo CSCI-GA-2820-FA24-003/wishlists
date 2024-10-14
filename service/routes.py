@@ -15,7 +15,7 @@
 ######################################################################
 
 """
-Product Wishlist Service
+Item Wishlist Service
 
 This service implements a REST API that allows you to Create, Read, Update
 and Delete Wishlist from the inventory of wishlists in the WishlistShop
@@ -64,7 +64,7 @@ def index():
 
 
 ######################################################################
-# CREATE A NEW Wishlist
+# CREATE A New Wishlist
 ######################################################################
 @app.route("/wishlists", methods=["POST"])
 def create_wishlists():
@@ -96,6 +96,11 @@ def create_wishlists():
     )
 
 
+######################################################################
+# CREATE an item in wishlist
+######################################################################
+
+
 # Read wishlist
 # @app.route("/wishlists/<int:wishlist_id>", methods=["GET"])
 # def get_wishlists(wishlist_id):
@@ -113,9 +118,6 @@ def create_wishlists():
 # @app.route("/wishlists/<int:wishlist_id>/items", methods=["GET"])
 # def list_items(wishlist_id):
 
-# Create an item in wishlist
-# @app.route("/wishlists/<int:wishlist_id>/items", methods=["POST"])
-# def create_wishlist_items(wishlist_id):
 
 # Read an item in wishlist
 # @app.route("/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["GET"])

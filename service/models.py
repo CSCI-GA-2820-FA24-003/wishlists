@@ -26,12 +26,16 @@ class Wishlist(db.Model):
     # Table Schema
     ##################################################
     id = db.Column(db.Integer, primary_key=True)  # wishlist id
-    name = db.Column(db.String(100))  # wishlist name
-    product_id = db.Column(db.Integer)
-    product_name = db.Column(db.String(100))
-    quantity = db.Column(db.Integer)
-    updated_time = db.Column(db.DateTime)
-    note = db.Column(db.String(1000))
+    name = db.Column(db.String(100), nullable=True)  # wishlist name
+    item_id = db.Column(db.Integer, nullable=True)
+    item_name = db.Column(db.String(100), nullable=True)
+    quantity = db.Column(db.Integer, nullable=True)
+    updated_time = db.Column(db.DateTime, nullable=False)
+    note = db.Column(db.String(1000), nullable=True)
+
+    items = db.relationship(
+        "Item", backref="wishlist", lazy=True, cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
         return f"<Wishlist {self.name} id=[{self.id}]>"
@@ -78,8 +82,8 @@ class Wishlist(db.Model):
         return {
             "id": self.id,
             "name": self.name,
-            "product_id": self.product_id,
-            "product_name": self.product_name,
+            "item_id": self.item_id,
+            "item_name": self.item_name,
             "quantity": self.quantity,
             "updated_time": (
                 self.updated_time.strftime("%a, %d %b %Y %H:%M:%S GMT")
@@ -98,8 +102,8 @@ class Wishlist(db.Model):
         """
         try:
             self.name = data["name"]
-            self.product_id = data["product_id"]
-            self.product_name = data["product_name"]
+            self.item_id = data["item_id"]
+            self.item_name = data["item_name"]
             self.quantity = data["quantity"]
             self.updated_time = data["updated_time"]
             self.note = data["note"]
@@ -142,3 +146,44 @@ class Wishlist(db.Model):
         """
         logger.info("Processing name query for %s ...", name)
         return cls.query.filter(cls.name == name)
+
+
+class Item(db.Model):
+    """
+    Class that represents a Item (Item) in a Wishlist
+    """
+
+    id = db.Column(db.Integer, primary_key=True)  # id of each item
+    wishlist_id = db.Column(db.Integer, db.ForeignKey("wishlist.id"), nullable=False)
+    item_name = db.Column(db.String(100), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    note = db.Column(db.String(1000), nullable=True)
+
+    def __repr__(self):
+        return f"<Item {self.item_name} in Wishlist {self.wishlist_id}>"
+
+    def serialize(self):
+        """
+        Insert an Item into a database
+        """
+        return {
+            "id": self.id,
+            "wishlist_id": self.wishlist_id,
+            "item_name": self.item_name,
+            "quantity": self.quantity,
+            "note": self.note,
+        }
+
+    def deserialize(self, data):
+        """
+        Remove an Item from a database
+        """
+        try:
+            self.item_name = data["item_name"]
+            self.quantity = data["quantity"]
+            self.note = data.get("note", "")
+        except KeyError as error:
+            raise DataValidationError(
+                f"Invalid Items in the Wishlist: missing {error.args[0]}"
+            )
+        return self

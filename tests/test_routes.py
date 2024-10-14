@@ -93,8 +93,8 @@ class TestYourResourceService(TestCase):
         )
         self.assertEqual(new_wishlist["id"], test_wishlist.id)
         self.assertEqual(new_wishlist["name"], test_wishlist.name)
-        self.assertEqual(new_wishlist["product_id"], test_wishlist.product_id)
-        self.assertEqual(new_wishlist["product_name"], test_wishlist.product_name)
+        self.assertEqual(new_wishlist["item_id"], test_wishlist.item_id)
+        self.assertEqual(new_wishlist["item_name"], test_wishlist.item_name)
         self.assertEqual(new_wishlist["quantity"], test_wishlist.quantity)
         self.assertEqual(
             updated_time_from_response.replace(microsecond=0),
@@ -108,8 +108,8 @@ class TestYourResourceService(TestCase):
         # new_wishlist = response.get_json()
         # self.assertEqual(new_wishlist["name"], test_wishlist.name)
         # self.assertEqual(new_wishlist["id"], test_wishlist.id)
-        # self.assertEqual(new_wishlist["product_id"], test_wishlist.product_id)
-        # self.assertEqual(new_wishlist["product_name"], test_wishlist.product_name)
+        # self.assertEqual(new_wishlist["item_id"], test_wishlist.item_id)
+        # self.assertEqual(new_wishlist["item_name"], test_wishlist.item_name)
         # self.assertEqual(new_wishlist["quantity"], test_wishlist.quantity)
         # self.assertEqual(new_wishlist["updated_time"], test_wishlist.updated_time)
         # self.assertEqual(new_wishlist["note"], test_wishlist.note)
