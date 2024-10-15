@@ -79,3 +79,24 @@ class TestWishlist(TestCase):
         self.assertEqual(data.quantity, wishlist.quantity)
         self.assertEqual(data.updated_time, wishlist.updated_time)
         self.assertEqual(data.note, wishlist.note)
+
+    def test_delete_wishlist_item(self):
+        """It should Delete an item from a Wishlist"""
+        wishlist = WishlistFactory()
+        item = ItemsFactory(wishlist=wishlist)
+        wishlist.items.append(item)
+        wishlist.create()
+
+        # Confirmation that the item exists in the wish list
+        self.assertIsNotNone(wishlist.id)
+        self.assertEqual(len(wishlist.items), 1)
+        self.assertEqual(wishlist.items[0].id, item.id)
+
+        # Delete items and update the wishlist
+        item.delete()
+        wishlist.update()
+
+        # Retrieve the wish list from the database and confirm that the item has been deleted
+        updated_wishlist = Wishlist.find(wishlist.id)
+        self.assertEqual(len(updated_wishlist.items), 0)
+        self.assertIsNone(Item.find(item.id))

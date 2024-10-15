@@ -31,10 +31,10 @@ from service.common import status  # HTTP Status Codes
 ######################################################################
 # GET HEALTH CHECK
 ######################################################################
-@app.route("/health")
-def health_check():
-    """Let them know our heart is still beating"""
-    return jsonify(status=200, message="Healthy"), status.HTTP_200_OK
+# @app.route("/health")
+# def health_check():
+#    """Let them know our heart is still beating"""
+#    return jsonify(status=200, message="Healthy"), status.HTTP_200_OK
 
 
 ######################################################################
@@ -125,9 +125,25 @@ def create_wishlists():
 # @app.route("/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["PUT"])
 # def update_item(wishlist_id, item_id):
 
+
+######################################################################
+# DELETE AN ITEM
+######################################################################
 # Delete an item in wishlist
-# @app.route("/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["DELETE"])
-# def delete_items(wishlist_id, item_id):
+@app.route("/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["DELETE"])
+def delete_items(wishlist_id, item_id):
+    """
+    Delete an Item from a Wishlist
+    """
+    app.logger.info("Deleting Item %s from Wishlist %s", item_id, wishlist_id)
+
+    item = Item.find(item_id)
+    if item:
+        item.delete()
+        app.logger.info("Item %s deleted successfully", item_id)
+
+    return "", status.HTTP_204_NO_CONTENT
+
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
