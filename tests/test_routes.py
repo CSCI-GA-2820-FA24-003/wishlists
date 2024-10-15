@@ -66,6 +66,25 @@ class TestYourResourceService(TestCase):
         """This runs after each test"""
         db.session.remove()
 
+    ############################################################
+    # Utility function to bulk create wishlists
+    ############################################################
+    def _create_wishlists(self, count: int = 1) -> list[Wishlist]:
+        """Factory method to create wishlists in bulk"""
+        wishlists = []
+        for _ in range(count):
+            test_wishlist = WishlistFactory()
+            response = self.client.post(BASE_URL, json=test_wishlist.serialize())
+            self.assertEqual(
+                response.status_code,
+                status.HTTP_201_CREATED,
+                "Could not create test wishlist",
+            )
+            new_wishlist = response.get_json()
+            test_wishlist.id = new_wishlist["id"]
+            wishlists.append(test_wishlist)
+        return wishlists
+
     ######################################################################
     #  P L A C E   T E S T   C A S E S   H E R E
     ######################################################################
@@ -113,3 +132,13 @@ class TestYourResourceService(TestCase):
         # self.assertEqual(new_wishlist["quantity"], test_wishlist.quantity)
         # self.assertEqual(new_wishlist["updated_time"], test_wishlist.updated_time)
         # self.assertEqual(new_wishlist["note"], test_wishlist.note)
+
+    def test_delete_wishlist(self):
+        """It should Delete a Wishlist"""
+        test_wishlist = self._create_wishlists(1)[0]
+        response = self.client.delete(f"{BASE_URL}/{test_wishlist.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(response.data), 0)
+        # make sure they are deleted
+        response = self.client.get(f"{BASE_URL}/{test_wishlist.id}")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

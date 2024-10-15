@@ -79,3 +79,17 @@ class TestWishlist(TestCase):
         self.assertEqual(data.quantity, wishlist.quantity)
         self.assertEqual(data.updated_time, wishlist.updated_time)
         self.assertEqual(data.note, wishlist.note)
+
+    def test_delete_a_wishlist(self):
+        """It should Delete a wishlist from the database"""
+        wishlists = Wishlist.all()
+        self.assertEqual(wishlists, [])
+        wishlist = WishlistFactory()
+        wishlist.create()
+        self.assertIsNotNone(wishlist.id)
+        wishlists = Wishlist.all()
+        self.assertEqual(len(wishlists), 1)
+        wishlist = wishlists[0]
+        wishlist.delete()
+        wishlists = Wishlist.all()
+        self.assertEqual(len(wishlists), 0)

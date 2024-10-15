@@ -96,6 +96,48 @@ def create_wishlists():
     )
 
 
+######################################################################
+# READ A WISHLIST
+######################################################################
+@app.route("/wishlists/<int:wishlist_id>", methods=["GET"])
+def get_wishlists(wishlist_id):
+    """
+    Retrieve a single Wishlist
+
+    This endpoint will return a Wishlist based on it's id
+    """
+    app.logger.info("Request for Wishlist with id: %s", wishlist_id)
+
+    # See if the account exists and abort if it doesn't
+    wishlist = Wishlist.find(wishlist_id)
+    if not wishlist:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Wishlist with id '{wishlist_id}' could not be found.",
+        )
+
+    return jsonify(wishlist.serialize()), status.HTTP_200_OK
+
+
+######################################################################
+# DELETE A WISHLIST
+######################################################################
+@app.route("/wishlists/<int:wishlist_id>", methods=["DELETE"])
+def delete_wishlists(wishlist_id):
+    """
+    Delete a Wishlist
+
+    This endpoint will delete a Wishlist based the id specified in the path
+    """
+    app.logger.info("Request to delete wishlist with id: %s", wishlist_id)
+
+    # Retrieve the wishlist to delete and delete it if it exists
+    wishlist = Wishlist.find(wishlist_id)
+    if wishlist:
+        wishlist.delete()
+        return "", status.HTTP_204_NO_CONTENT
+
+
 # Read wishlist
 # @app.route("/wishlists/<int:wishlist_id>", methods=["GET"])
 # def get_wishlists(wishlist_id):
