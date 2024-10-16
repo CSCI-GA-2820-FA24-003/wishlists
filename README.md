@@ -21,7 +21,7 @@ read_items             GET      /wishlists/<wishlist_id>/items/<item_id>
 update_item            PUT      /wishlists/<wishlist_id>/items/<item_id>
 delete_items           DELETE   /wishlists/<wishlist_id>/items/<item_id>
 ```
-The test cases have 84% test coverage and can be run with `pytest` (or `make test`)
+The test cases have 86% test coverage and can be run with `pytest` (or `make test`)
 
 ## Contents
 
