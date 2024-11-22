@@ -137,9 +137,6 @@ $(function () {
         let note = $("#wishlist_note").val();
         let update = $("#wishlist_update").val(); 
         let is_favorite = $("#item_favorite").prop("checked");
-
-
-        
         
         $("#flash_message").empty();
         
@@ -162,6 +159,37 @@ $(function () {
         });
 
         ajax.done(function(res){
+            update_wishlist_data(res)
+            flash_message("Success: Update the Wishlist")
+        });
+
+        ajax.fail(function(res){
+            clear_wishlist_data()
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
+    // Query the Wishlist with the Attributes
+    $("#wishlist_search_btn").click(function () {
+
+        let name = $("#wishlist_name").val();
+
+        $("#flash_message").empty();
+
+        if (!name) {
+            alert("Wishlist name is required to query the resource.");
+            return;
+        }
+
+        let ajax = $.ajax({
+            type: "GET",
+            url: `/wishlists?name=${name}`,
+            contentType: "application/json",
+        });
+
+        ajax.done(function(res){
+            console.log(res)
             update_wishlist_data(res)
             flash_message("Success: Update the Wishlist")
         });
@@ -266,6 +294,39 @@ $(function () {
 
     });
 
+
+    // Query the Items with the Attributes
+    $("#item_search_btn").click(function () {
+        
+        let name = $("#item_name").val();
+        let wishlist_id = $("#desired_item_wishlist").val();
+
+        $("#flash_message").empty();
+
+        if (!name) {
+            alert("Wishlist name is required to query the resource.");
+            return;
+        }
+
+        let ajax = $.ajax({
+            type: "GET",
+            url: `/wishlists/${wishlist_id}/items?name=${name}`,
+            contentType: "application/json",
+        });
+
+        ajax.done(function(res){
+            console.log(res)
+            update_wishlist_data(res)
+            flash_message("Success: Update the Wishlist")
+        });
+
+        ajax.fail(function(res){
+            clear_wishlist_data()
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+    
      // Clear the items interface
      $("#item_clear_int_btn").click(function () {
         $("#item_id").val("");

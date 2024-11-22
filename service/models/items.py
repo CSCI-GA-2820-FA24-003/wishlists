@@ -86,6 +86,18 @@ class Items(db.Model, PersistentBase):
         return self
 
     @classmethod
+    def find_by_name(cls, wishlist_id, name):
+        """Returns all Wishlists with the given name
+
+        Args:
+            price (float): the price  of the Wishlists item you want to match
+        """
+        logger.info(
+            "Processing query for wishlist_id=%s and name=%s ...", wishlist_id, name
+        )
+        return cls.query.filter(cls.wishlist_id == wishlist_id, cls.name == name).all()
+
+    @classmethod
     def find_by_price(cls, wishlist_id, price):
         """Returns all Wishlists with the given name
 

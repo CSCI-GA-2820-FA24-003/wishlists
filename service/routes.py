@@ -330,12 +330,15 @@ def check_content_type(content_type) -> None:
     )
 
 
-##
+######################################################################
+# QUERY ITEMS BASED ON THEIR ATTRIBUTES
+######################################################################
 @app.route("/wishlists/<int:wishlist_id>/items", methods=["GET"])
 def get_all_items(wishlist_id):
     """
     Get all Items in WL
     """
+    name = request.args.get("name")
     category = request.args.get("category")
     price = request.args.get("price", type=float)
     is_favorite = request.args.get("is_favorite")
@@ -346,6 +349,9 @@ def get_all_items(wishlist_id):
             status.HTTP_404_NOT_FOUND,
             f"Wishlist with id '{wishlist_id}' could not be found.",
         )
+    if name:
+        app.logger.info("Filtering by name: %s", name)
+        items = Items.find_by_name(wishlist_id=wishlist_id, name=name)
     if category:
         app.logger.info("Filtering by category: %s", category)
         items = Items.find_by_category(wishlist_id=wishlist_id, category=category)
@@ -491,11 +497,12 @@ def cancel_wishlist_favorite(wishlist_id):
 
 
 # search item using query str
+"""
 @app.route("/wishlists/<int:wishlist_id>/items/name", methods=["GET"])
 def search_items(wishlist_id):
-    """
+    
     Search Item by name in given WL
-    """
+    
     wishlist = Wishlist.find(wishlist_id)
     if not wishlist:
         abort(
@@ -513,3 +520,4 @@ def search_items(wishlist_id):
         status.HTTP_404_NOT_FOUND,
         f"Item '{item_name}' could not be found in id '{wishlist_id}'  :(",
     )
+"""
