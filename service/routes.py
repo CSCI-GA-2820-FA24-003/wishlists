@@ -423,23 +423,13 @@ class ItemCollection(Resource):
                 status.HTTP_404_NOT_FOUND,
                 f"Wishlist with id '{wishlist_id}' could not be found.",
             )
-        if item_name:
-            app.logger.info("Searching for item by name: %s", item_name)
-            # Convert `items` to a list of serialized dictionaries temporarily for name filtering
-            filtered_items = [
-                item.serialize()
-                for item in items
-                if item.name.lower() == item_name.lower()
-            ]
-            if not filtered_items:
-                abort(
-                    status.HTTP_404_NOT_FOUND,
-                    f"Item with name '{item_name}' could not be found in Wishlist with id '{wishlist_id}'.",
-                )
 
         if category:
             app.logger.info("Filtering by category: %s", category)
             items = Items.find_by_category(wishlist_id=wishlist_id, category=category)
+        elif item_name:
+            app.logger.info("Filtering by name: %s", item_name)
+            items = Items.find_by_name(wishlist_id=wishlist_id, name=item_name)
         elif price is not None:
             app.logger.info("Filtering by price: %s", price)
             items = Items.find_by_price(wishlist_id=wishlist_id, price=price)
