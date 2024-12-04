@@ -541,7 +541,13 @@ class ItemResource(Resource):
         )
 
         # See if the item exists and abort if it doesn't
+        wishlist = Wishlist.find(wishlist_id)
         item = Items.find(item_id)
+        if not wishlist:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Wishlist with id '{item_id}' could not be found.",
+            )
         if not item:
             abort(
                 status.HTTP_404_NOT_FOUND,
