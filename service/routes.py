@@ -152,13 +152,6 @@ wishlist_args.add_argument(
     location="args",
     help="Filter items by favorite status",
 )
-wishlist_args.add_argument(
-    "available",
-    type=inputs.boolean,
-    location="args",
-    required=False,
-    help="List Wishlists by availability",
-)
 
 
 item_args = reqparse.RequestParser()
