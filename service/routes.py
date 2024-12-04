@@ -50,10 +50,10 @@ authorizations = {"apikey": {"type": "apiKey", "in": "header", "name": "X-Api-Ke
 api = Api(
     app,
     version="1.0.0",
-    title="Pet Demo REST API Service",
-    description="This is a sample server Pet store server.",
-    default="pets",
-    default_label="Pet shop operations",
+    title="Wishlist Demo REST API Service",
+    description="This is a sample server Wishlist server.",
+    default="wishlist",
+    default_label="Wishlist operations",
     doc="/apidocs",  # default also could use doc='/apidocs/'
     authorizations=authorizations,
     prefix="/api",
@@ -87,16 +87,16 @@ create_item_model = api.model(
     {
         "name": fields.String(required=True, description="The name of the item"),
         "category": fields.String(
-            required=False, description="The category of the item"
+            required=True, description="The category of the item"
         ),
         "price": fields.Float(
-            required=False, description="The price of the item (Floating Points)"
+            required=True, description="The price of the item (Floating Points)"
         ),
         "quantity": fields.Integer(
             required=True, description="The quantity of the items (Integers)"
         ),
         "is_favorite": fields.Boolean(
-            required=False,
+            required=True,
             description="Is the item marked as favorite? (Choose YES or NO)",
         ),
         "note": fields.String(required=False, description="Notes for the Items"),
@@ -121,9 +121,6 @@ create_wishlist_model = api.model(
     "Wishlist",
     {
         "name": fields.String(required=True, description="The name of the wishlist"),
-        "category": fields.String(
-            required=True, description="The category of the wishlist"
-        ),
         "is_favorite": fields.Boolean(
             required=True,
             description="Is the wishlist marked as favorite? (Choose YES or NO)",
@@ -170,6 +167,9 @@ item_args.add_argument(
     "category", type=str, location="args", help="Filter items by category"
 )
 item_args.add_argument(
+    "quantity", type=int, location="args", help="Filter items by quantity"
+)
+item_args.add_argument(
     "price", type=float, location="args", help="Filter items by price"
 )
 item_args.add_argument(
@@ -177,6 +177,9 @@ item_args.add_argument(
     type=inputs.boolean,
     location="args",
     help="Filter items by favorite status",
+)
+item_args.add_argument(
+    "wishlist_id", type=int, location="args", help="Filter items by wishlist_id"
 )
 
 
@@ -293,6 +296,7 @@ class WishlistResource(Resource):
     # ------------------------------------------------------------------
     @api.doc("get_wishlists")
     @api.response(404, "Wishlist not found")
+    @api.response(400, "The posted Wishlist data was not valid")
     @api.marshal_with(wishlist_model)
     def get(self, wishlist_id):
         """
@@ -418,8 +422,10 @@ class ItemCollection(Resource):
     # ------------------------------------------------------------------
     # LIST ALL ITEMS
     # ------------------------------------------------------------------
-    @api.doc("list_items")
+    @api.doc("list_all_items")
     @api.expect(item_args, validate=True)
+    @api.response(404, "Wishlist ID does not exist")
+    @api.response(400, "The posted Item data was not valid")
     @api.marshal_list_with(item_model)
     def get(self, wishlist_id):
         """
@@ -474,7 +480,7 @@ class ItemResource(Resource):
     # ------------------------------------------------------------------
     # UPDATE AN ITEM
     # ------------------------------------------------------------------
-    @api.doc("update_items")
+    @api.doc("update_an_item")
     @api.response(404, "Item not found")
     @api.response(400, "The posted Item data was not valid")
     @api.expect(item_model)
@@ -509,7 +515,7 @@ class ItemResource(Resource):
     # ------------------------------------------------------------------
     # DELETE AN ITEM
     # ------------------------------------------------------------------
-    @api.doc("delete_items")
+    @api.doc("delete_an_item")
     @api.response(204, "Item deleted")
     def delete(self, wishlist_id, item_id):
         """
@@ -527,8 +533,9 @@ class ItemResource(Resource):
     # ------------------------------------------------------------------
     # GET AN ITEM
     # ------------------------------------------------------------------
-    @api.doc("get_items")
+    @api.doc("get_an_item")
     @api.response(404, "Item not found")
+    @api.response(400, "The posted Item data was not valid")
     @api.marshal_with(item_model)
     def get(self, wishlist_id, item_id):
         """
@@ -562,12 +569,13 @@ class ItemResource(Resource):
 
 
 @api.route("/wishlists/<int:wishlist_id>/items/<int:item_id>/favorite")
-@api.param("")
+@api.param("wishlist_id & item_id", "The Wishlist identifier & The Item identifier")
 class ItemMarkFavoriteResource(Resource):
     """Wishlist Favorite Class Function"""
 
-    @api.doc("mark_items_favorite")
+    @api.doc("mark_items_as_favorite")
     @api.response(404, "Items favorite not marked")
+    @api.marshal_with(item_model)
     def put(self, wishlist_id, item_id):
         """
         Mark an item as favorite in a wishlist
@@ -595,7 +603,7 @@ class ItemMarkFavoriteResource(Resource):
 
         return item.serialize(), status.HTTP_200_OK
 
-    @api.doc("delete_items_favorite")
+    @api.doc("delete_items_as_favorite")
     @api.response(204, "Items favorite deleted")
     def delete(self, wishlist_id, item_id):
         """
@@ -626,12 +634,13 @@ class ItemMarkFavoriteResource(Resource):
 
 
 @api.route("/wishlists/<int:wishlist_id>/favorite")
-@api.param("")
+@api.param("wishlist_id", "The Wishlist identifier")
 class WishlistMarkFavoriteResource(Resource):
     """Item Favorite Class Function"""
 
-    @api.doc("mark_items_favorite")
+    @api.doc("mark_wishlists_as_favorite")
     @api.response(404, "Wishlists favorite not marked")
+    @api.marshal_with(wishlist_model)
     def put(self, wishlist_id):
         """
         Mark an item as favorite in a wishlist
@@ -656,7 +665,7 @@ class WishlistMarkFavoriteResource(Resource):
 
         return wishlist.serialize(), status.HTTP_200_OK
 
-    @api.doc("delete_wishlist_favorite")
+    @api.doc("delete_wishlist_as_favorite")
     @api.response(204, "Wishlists favorite deleted")
     def delete(self, wishlist_id):
         """
