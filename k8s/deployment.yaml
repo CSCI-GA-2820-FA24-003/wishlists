@@ -23,7 +23,7 @@ spec:
       containers:
       - name: wishlists
         image: cluster-registry:5000/petshop:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
           protocol: TCP
